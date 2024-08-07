@@ -1,0 +1,27 @@
+<!-- templates/clientes/lista_clientes.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Clientes</title>
+</head>
+<body>
+    <h1>Lista de Clientes</h1>
+    
+    {% if botao_ativo %}
+        <form method="POST" action="{% url 'clientes:sortear_clientes' %}">
+            {% csrf_token %}
+            <button type="submit">Sortear</button>
+        </form>
+    {% else %}
+        <p>O botão de sorteio está inativo.</p>
+    {% endif %}
+    
+    {% if clientes %}
+        <ul>
+            {% for cliente in clientes %}
+                <li>{{ cliente.nome }} - {{ cliente.numero }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
