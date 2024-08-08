@@ -3,41 +3,53 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 import random
 from .models import Cliente, Configuracao  # Certifique-se de que Configuracao está importado
-def upload_csv(request):
-    if request.method == 'POST':
-        if 'file' in request.FILES:
-            csv_file = request.FILES['file']
-            if not csv_file.name.endswith('.csv'):
-                messages.error(request, 'O arquivo não é um CSV.')
-                return redirect('clientes:upload_csv')
-          
-            reader = csv.reader(csv_file.read().decode('utf-8').splitlines())
-            for row in reader:
-                # Ignorar a primeira linha se contiver cabeçalhos
-                if reader.line_num == 1:
-                    continue
-                Cliente.objects.create(nome=row[0], numero=row[1])
-            messages.success(request, 'Clientes importados com sucesso.')
-        else:
-            messages.error(request, 'Nenhum arquivo foi selecionado.')
-        
-        return redirect('clientes:upload_csv')
-    
-    return render(request, 'clientes/upload_csv.html')
+from .forms import CSVUploadForm
+from io import StringIO
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test
+
+
+def admin_required(user):
+    return user.is_superuser
+
+@user_passes_test(admin_required, login_url='/admin/login/')
 def lista_clientes(request):
     configuracao = Configuracao.objects.first()
     
-    if request.method == 'POST':
-        if configuracao and configuracao.botao_ativo:
-            quantidade_exibida = configuracao.quantidade_exibida
-            clientes = Cliente.objects.order_by('?')[:quantidade_exibida]  # Ordena aleatoriamente e limita a quantidade
-        else:
-            clientes = Cliente.objects.none()
+    if request.method == 'POST' and configuracao and configuracao.botao_ativo:
+        quantidade_exibida = configuracao.quantidade_exibida
+
+        # Resetar o status de sorteio de todos os clientes
+        Cliente.objects.all().update(sorteado=False)
+
+        # Selecionar novos clientes sorteados
+        clientes_sorteados = Cliente.objects.order_by('?')[:quantidade_exibida]
+        
+        # Atualizar o status de sorteio dos novos sorteados
+        Cliente.objects.filter(id__in=[cliente.id for cliente in clientes_sorteados]).update(sorteado=True)
     else:
-        clientes = []
+        # Se não houver sorteio, mostrar todos os clientes sorteados
+        clientes_sorteados = Cliente.objects.filter(sorteado=True)
 
     context = {
-        'clientes': clientes,
+        'clientes': clientes_sorteados,
         'botao_ativo': configuracao.botao_ativo if configuracao else False
     }
     return render(request, 'clientes/lista_clientes.html', context)
+
+def home_page(request):
+    form = CPFForm()
+    ganhadores = Cliente.objects.filter(sorteado=True)
+    return render(request, 'clientes/home_page.html', {'form': form, 'ganhadores': ganhadores})
+
+def home(request):
+    cpf_query = request.GET.get('cpf', '')
+    clientes = Cliente.objects.filter(cpf=cpf_query) if cpf_query else []
+    ganhadores = Cliente.objects.filter(sorteado=True)
+
+    return render(request, 'clientes/home.html', {
+        'clientes': clientes,
+        'cpf_query': cpf_query,
+        'ganhadores': ganhadores,
+    })

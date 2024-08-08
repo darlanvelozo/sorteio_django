@@ -1,27 +1,238 @@
-<!-- templates/clientes/lista_clientes.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Lista de Clientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #0056b3;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            position: relative;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .clientes-list {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .clientes-list li {
+            background-color: #ffffff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .no-clients {
+            text-align: center;
+            color: #ff0000;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        /* Animação do sorteio */
+        .loading {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading span {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .loading .dots {
+            display: inline-block;
+            font-size: 24px;
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% {
+                opacity: 0;
+            }
+            40% {
+                opacity: 1;
+            }
+            60% {
+                opacity: 0;
+            }
+            80%, 100% {
+                opacity: 1;
+            }
+        }
+        /* Menu de opções */
+        .menu {
+            position: fixed; /* Fixar o menu no canto superior direito */
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* Garantir que o menu esteja acima dos outros elementos */
+        }
+
+        .menu-button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            right: 0;
+            top: 100%;
+            z-index: 1;
+            min-width: 160px;
+        }
+
+        .menu-content a {
+            display: block;
+            padding: 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .menu-content a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .menu.show .menu-content {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleMenu() {
+            document.querySelector('.menu').classList.toggle('show');
+        }
+    </script>
 </head>
 <body>
-    <h1>Lista de Clientes</h1>
-    
-    {% if botao_ativo %}
-        <form method="POST" action="{% url 'clientes:sortear_clientes' %}">
-            {% csrf_token %}
-            <button type="submit">Sortear</button>
-        </form>
-    {% else %}
-        <p>O botão de sorteio está inativo.</p>
-    {% endif %}
-    
-    {% if clientes %}
-        <ul>
-            {% for cliente in clientes %}
-                <li>{{ cliente.nome }} - {{ cliente.numero }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <div class="container">
+        <h1>Mega Sorteio</h1>
+
+        <div class="button-container">
+            {% if botao_ativo %}
+                <form id="sortear-form" method="POST" action="{% url 'clientes:sortear_clientes' %}">
+                    {% csrf_token %}
+                    <button type="button" onclick="startSortear()">Sortear</button>
+                </form>
+            {% else %}
+                <p>O botão de sorteio está inativo.</p>
+            {% endif %}
+        </div>
+
+        <div id="loading" class="loading">
+            Sorteando<span class="dots">...</span>
+        </div>
+
+        <div id="clientes-list" class="clientes-list">
+            <ul id="clientes-ul">
+                {% if clientes %}
+                    {% for cliente in clientes %}
+                        <li data-timestamp="{{ forloop.counter0 }}" class="cliente-item">{{ cliente.nome }} - <em>{{ cliente.ticket }}</em></li>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-clients">Nenhum cliente disponível.</p>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function startSortear() {
+            // Mostrar a mensagem de carregamento
+            document.getElementById('loading').style.display = 'block';
+            
+            // Ocultar a lista de clientes
+            document.getElementById('clientes-ul').style.display = 'none';
+
+            // Mostrar os clientes um a um com delay
+            const items = Array.from(document.querySelectorAll('.cliente-item'));
+            let delay = 0;
+
+            items.forEach(item => {
+                setTimeout(() => {
+                    item.style.display = 'block'; // Exibir item
+                }, delay);
+                delay += 1000; // Aumenta o delay para o próximo item
+            });
+
+            // Ocultar a mensagem de carregamento após todos os itens terem sido exibidos
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('clientes-ul').style.display = 'block';
+            }, delay);
+        }
+
+        // Inicialmente, esconder os itens da lista de clientes
+        document.querySelectorAll('.cliente-item').forEach(item => {
+            item.style.display = 'none';
+        });
+    </script>
+    <div class="menu">
+        <button class="menu-button" onclick="toggleMenu()">Menu</button>
+        <div class="menu-content">
+            <a href="{% url 'admin:index' %}">Configurações</a>
+            <a href="{% url 'clientes:home' %}">Home</a>
+        </div>
+    </div>
 </body>
 </html>

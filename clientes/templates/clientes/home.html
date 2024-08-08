@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consulta de Tickets e Ganhadores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            position: relative; /* Adicione isso para o posicionamento do menu */
+            background-color: #0056b3;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-panel, .right-panel {
+            width: 48%;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results-container {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .results-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .results-container li {
+            background-color: #ffffff;
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-container .ticket {
+            font-weight: bold;
+        }
+
+        .ganhadores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .ganhadores-table th, .ganhadores-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .ganhadores-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .ganhadores-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .no-result {
+            color: #ff0000;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Menu de opções */
+        .menu {
+            position: fixed; /* Fixar o menu no canto superior direito */
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* Garantir que o menu esteja acima dos outros elementos */
+        }
+
+        .menu-button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            right: 0;
+            top: 100%;
+            z-index: 1;
+            min-width: 160px;
+        }
+
+        .menu-content a {
+            display: block;
+            padding: 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .menu-content a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .menu.show .menu-content {
+            display: block;
+        }
+        .titulo{
+          color: #f0f0f0;
+        }
+    </style>
+    <script>
+        function toggleMenu() {
+            document.querySelector('.menu').classList.toggle('show');
+        }
+    </script>
+</head>
+<body>
+  <h1 class="titulo" >Mega Sorteio</h1>
+    <div class="container">
+        <div class="left-panel">
+            <h1>Consulta de Tickets</h1>
+            <form method="get" action="{% url 'clientes:home' %}">
+                <label for="cpf">Digite o CPF:</label>
+                <input type="text" id="cpf" name="cpf" value="{{ cpf_query }}">
+                <button type="submit">Consultar</button>
+            </form>
+
+            <div class="results-container">
+                {% if clientes %}
+                    <h2>Tickets encontrados para o CPF {{ cpf_query }}:</h2>
+                    <ul>
+                        {% for cliente in clientes %}
+                            <li><span class="ticket">Ticket:</span> {{ cliente.ticket }}</li>
+                        {% endfor %}
+                    </ul>
+                {% elif cpf_query %}
+                    <p class="no-result">Nenhum ticket encontrado para o CPF {{ cpf_query }}.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2>Ganhadores do Sorteio</h2>
+            <div class="results-container">
+                {% if ganhadores %}
+                    <ul>
+                        {% for ganhador in ganhadores %}
+                            <li><strong>{{ ganhador.nome }}</strong> - Ticket: <strong>{{ ganhador.ticket }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-result">O sorteio ainda não foi realizado.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu de opções -->
+    <div class="menu">
+        <button class="menu-button" onclick="toggleMenu()">Menu</button>
+        <div class="menu-content">
+            <a href="{% url 'admin:index' %}">Configurações</a>
+            <a href="{% url 'clientes:lista_clientes' %}">Sortear Clientes</a>
+        </div>
+    </div>
+</body>
+</html>
