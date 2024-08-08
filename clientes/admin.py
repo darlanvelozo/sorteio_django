@@ -38,7 +38,8 @@ class CSVFileAdmin(admin.ModelAdmin):
 
 class ConfiguracaoAdmin(admin.ModelAdmin):
     list_display = ('botao_ativo', 'quantidade_exibida')
+class ClienteAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'numero', 'cpf', 'ticket', 'sorteado')    
     
-    
-admin.site.register(Cliente)
+admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Configuracao, ConfiguracaoAdmin)
