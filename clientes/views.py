@@ -10,6 +10,9 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
 
+import random
+from django.db.models import Count
+
 def admin_required(user):
     return user.is_superuser
 
@@ -23,11 +26,40 @@ def lista_clientes(request):
         # Resetar o status de sorteio de todos os clientes
         Cliente.objects.all().update(sorteado=False)
 
-        # Selecionar novos clientes sorteados
-        clientes_sorteados = Cliente.objects.order_by('?')[:quantidade_exibida]
+        # Obter todos os clientes com CPFs únicos
+        clientes_unicos = Cliente.objects.values('id', 'nome', 'cpf', 'ticket').annotate(count=Count('cpf')).filter(count=1)
+        
+        # Embaralhar a lista de clientes para aleatoriedade
+        clientes_unicos = list(clientes_unicos)
+        random.shuffle(clientes_unicos)
+        
+        # Função para garantir que não haja CPFs duplicados
+        def selecionar_clientes_unicos(clientes, quantidade):
+            selecionados = []
+            cpfs = set()
+            for cliente in clientes:
+                if cliente['cpf'] not in cpfs:
+                    selecionados.append(cliente)
+                    cpfs.add(cliente['cpf'])
+                if len(selecionados) == quantidade:
+                    break
+            return selecionados
+        
+        clientes_sorteados = []
+        tentativas = 0
+        max_tentativas = 10  # Número máximo de tentativas para evitar loops infinitos
+        
+        while len(clientes_sorteados) < quantidade_exibida and tentativas < max_tentativas:
+            tentativas += 1
+            random.shuffle(clientes_unicos)
+            clientes_sorteados = selecionar_clientes_unicos(clientes_unicos, quantidade_exibida)
+        
+        if len(clientes_sorteados) < quantidade_exibida:
+            # Caso não tenha conseguido selecionar a quantidade desejada, selecionar o restante do total possível
+            clientes_sorteados = clientes_unicos[:quantidade_exibida]
         
         # Atualizar o status de sorteio dos novos sorteados
-        Cliente.objects.filter(id__in=[cliente.id for cliente in clientes_sorteados]).update(sorteado=True)
+        Cliente.objects.filter(id__in=[cliente['id'] for cliente in clientes_sorteados]).update(sorteado=True)
     else:
         # Se não houver sorteio, mostrar todos os clientes sorteados
         clientes_sorteados = Cliente.objects.filter(sorteado=True)
@@ -37,7 +69,7 @@ def lista_clientes(request):
         'botao_ativo': configuracao.botao_ativo if configuracao else False
     }
     return render(request, 'clientes/lista_clientes.html', context)
-
+    
 def home_page(request):
     form = CPFForm()
     ganhadores = Cliente.objects.filter(sorteado=True)
