@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from io import StringIO
 from .models import CSVFile, Cliente
 from .forms import CSVUploadForm
-
+from .models import ConfiguracaoSite
 @admin.register(CSVFile)
 class CSVFileAdmin(admin.ModelAdmin):
     list_display = ('uploaded_at',)
@@ -41,6 +41,8 @@ class ConfiguracaoAdmin(admin.ModelAdmin):
     list_display = ('botao_ativo', 'quantidade_exibida')
 class ClienteAdmin(admin.ModelAdmin):
     list_display = ('nome', 'numero', 'cpf', 'ticket', 'cidade', 'sorteado')    
-    
+
+
+admin.site.register(ConfiguracaoSite)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Configuracao, ConfiguracaoAdmin)

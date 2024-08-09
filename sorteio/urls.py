@@ -17,9 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from clientes import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('clientes/', include('clientes.urls')),  # Adicione esta linha para incluir URLs do aplicativo 'clientes'
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

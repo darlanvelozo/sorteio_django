@@ -25,3 +25,8 @@ class CSVFile(models.Model):
     def __str__(self):
         return f"CSV importado em {self.uploaded_at}"
 
+class ConfiguracaoSite(models.Model):
+    imagem_fundo = models.ImageField(upload_to='backgrounds/', blank=True, null=True)
+
+    def __str__(self):
+        return "Configuração do Site"

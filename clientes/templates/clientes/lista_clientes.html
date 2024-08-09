@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: url('background.jpg') no-repeat center center fixed;
+            background: url('{% if config.imagem_fundo %}{{ config.imagem_fundo.url }}{% else %}background.jpg{% endif %}') no-repeat center center fixed;
             background-size: cover;
             color: #333;
             display: flex;

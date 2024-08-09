@@ -8,7 +8,7 @@ from io import StringIO
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
-
+from .models import ConfiguracaoSite
 
 import random
 from django.db.models import Count
@@ -66,10 +66,11 @@ def lista_clientes(request):
     else:
         # Se não houver sorteio, mostrar todos os clientes sorteados
         clientes_sorteados = Cliente.objects.filter(sorteado=True)
-
+    config = ConfiguracaoSite.objects.first() 
     context = {
         'clientes': clientes_sorteados,
-        'botao_ativo': configuracao.botao_ativo if configuracao else False
+        'botao_ativo': configuracao.botao_ativo if configuracao else False,
+        'config': config
     }
     return render(request, 'clientes/lista_clientes.html', context)
     
@@ -82,9 +83,11 @@ def home(request):
     cpf_query = request.GET.get('cpf', '')
     clientes = Cliente.objects.filter(cpf=cpf_query) if cpf_query else []
     ganhadores = Cliente.objects.filter(sorteado=True)
-
+    config = ConfiguracaoSite.objects.first()  # Pegue a primeira configuração
+    
     return render(request, 'clientes/home.html', {
         'clientes': clientes,
         'cpf_query': cpf_query,
         'ganhadores': ganhadores,
+        'config': config
     })
