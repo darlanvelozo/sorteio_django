@@ -14,7 +14,7 @@
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            position: relative; /* Adicione isso para o posicionamento do menu */
+            position: relative;
             background-color: #0056b3;
         }
 
@@ -34,15 +34,10 @@
             width: 48%;
         }
 
-        h1 {
+        h1, h2 {
             color: #007bff;
             margin-bottom: 20px;
             text-align: center;
-        }
-
-        h2 {
-            color: #007bff;
-            margin-bottom: 10px;
         }
 
         form {
@@ -97,10 +92,6 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        .results-container .ticket {
-            font-weight: bold;
-        }
-
         .ganhadores-table {
             width: 100%;
             border-collapse: collapse;
@@ -130,10 +121,10 @@
 
         /* Menu de opções */
         .menu {
-            position: fixed; /* Fixar o menu no canto superior direito */
+            position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000; /* Garantir que o menu esteja acima dos outros elementos */
+            z-index: 1000;
         }
 
         .menu-button {
@@ -177,8 +168,32 @@
         .menu.show .menu-content {
             display: block;
         }
-        .titulo{
-          color: #f0f0f0;
+
+        /* Título */
+        .titulo {
+            color: #f0f0f0;
+        }
+
+        /* Estilos para o link de Termos & Condições */
+        .termos {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .termos a {
+            color: #000000;
+            text-decoration: underline;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .termos a:hover {
+            text-decoration: underline;
+            color: #333333;
         }
     </style>
     <script>
@@ -188,7 +203,7 @@
     </script>
 </head>
 <body>
-  <h1 class="titulo" >Mega Sorteio</h1>
+    <h1 class="titulo">Mega Sorteio</h1>
     <div class="container">
         <div class="left-panel">
             <h1>Consulta de Tickets</h1>
@@ -229,6 +244,7 @@
                 {% endif %}
             </div>
         </div>
+    </div>
 
     <!-- Menu de opções -->
     <div class="menu">
@@ -237,6 +253,15 @@
             <a href="{% url 'admin:index' %}">Configurações</a>
             <a href="{% url 'clientes:lista_clientes' %}">Sortear Clientes</a>
         </div>
+    </div>
+
+    <!-- Link para download dos Termos e Condições -->
+    <div class="termos">
+        {% if config.termos_arquivo %}
+            <a href="{{ config.termos_arquivo.url }}" download>Termos & Condições</a>
+        {% else %}
+            <p>Termos & Condições não disponíveis.</p>
+        {% endif %}
     </div>
 </body>
 </html>

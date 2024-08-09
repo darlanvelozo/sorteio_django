@@ -27,6 +27,6 @@ class CSVFile(models.Model):
 
 class ConfiguracaoSite(models.Model):
     imagem_fundo = models.ImageField(upload_to='backgrounds/', blank=True, null=True)
-
+    termos_arquivo = models.FileField(upload_to='termos/', blank=True, null=True)
     def __str__(self):
         return "Configuração do Site"
