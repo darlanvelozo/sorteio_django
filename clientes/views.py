@@ -27,7 +27,7 @@ def lista_clientes(request):
         Cliente.objects.all().update(sorteado=False)
 
         # Obter todos os clientes com CPFs únicos
-        clientes_unicos = Cliente.objects.values('id', 'nome', 'cpf', 'ticket').annotate(count=Count('cpf')).filter(count=1)
+        clientes_unicos = Cliente.objects.values('id', 'nome', 'cpf', 'ticket', 'cidade').annotate(count=Count('cpf')).filter(count=1)
         
         # Embaralhar a lista de clientes para aleatoriedade
         clientes_unicos = list(clientes_unicos)
@@ -60,6 +60,9 @@ def lista_clientes(request):
         
         # Atualizar o status de sorteio dos novos sorteados
         Cliente.objects.filter(id__in=[cliente['id'] for cliente in clientes_sorteados]).update(sorteado=True)
+
+        # Recarregar os clientes sorteados com os dados completos
+        clientes_sorteados = Cliente.objects.filter(id__in=[cliente['id'] for cliente in clientes_sorteados])
     else:
         # Se não houver sorteio, mostrar todos os clientes sorteados
         clientes_sorteados = Cliente.objects.filter(sorteado=True)

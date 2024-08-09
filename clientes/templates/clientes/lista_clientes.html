@@ -167,6 +167,62 @@
         .menu.show .menu-content {
             display: block;
         }
+/* Estiliza a lista de clientes */
+.clientes-list {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte moderna */
+    margin: 20px auto;
+    padding: 0;
+    max-width: 900px; /* Largura máxima para centralizar o conteúdo */
+    text-align: center; /* Centraliza o texto dos itens da lista */
+}
+
+#clientes-ul {
+    list-style-type: none; /* Remove marcadores padrão */
+    padding: 0;
+    margin: 0 auto; /* Centraliza a lista horizontalmente */
+}
+
+.cliente-item {
+    background-color: #ffffff; /* Fundo branco para cada item */
+    border: 1px solid #e0e0e0; /* Borda suave */
+    border-radius: 8px; /* Bordas arredondadas */
+    margin: 10px auto; /* Espaçamento vertical entre os itens e centraliza horizontalmente */
+    padding: 20px; /* Espaçamento interno */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Transições suaves */
+    max-width: 100%; /* Garante que o card não ultrapasse a largura do contêiner */
+    display: inline-block; /* Faz os cards se ajustarem e não se estenderem a largura total */
+    text-align: left; /* Alinha o texto à esquerda dentro do card */
+}
+
+.cliente-item:hover {
+    background-color: #f1f1f1; /* Cor de fundo ao passar o mouse */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Aumenta a sombra ao passar o mouse */
+}
+
+.cliente-info {
+    margin-bottom: 12px; /* Espaçamento entre as informações */
+}
+
+.label {
+    font-weight: bold;
+    color: #333; /* Cor do texto */
+    display: inline-block;
+    min-width: 100px; /* Largura mínima para alinhamento */
+}
+
+.value {
+    color: #555; /* Cor do texto */
+    font-size: 16px; /* Tamanho da fonte */
+}
+
+.no-clients {
+    text-align: center;
+    color: #888; /* Cor mais clara para o texto */
+    font-style: italic;
+    font-size: 18px; /* Tamanho da fonte */
+}
+
     </style>
     <script>
         function toggleMenu() {
@@ -197,14 +253,25 @@
         <div id="clientes-list" class="clientes-list">
             <ul id="clientes-ul">
                 {% if clientes %}
-                {% for cliente in clientes %}
-                <li data-timestamp="{{ forloop.counter0 }}" class="cliente-item">{{ cliente.nome }} - <em>{{ cliente.ticket }}</em></li>
-                {% endfor %}
+                    {% for cliente in clientes %}
+                        <li data-timestamp="{{ forloop.counter0 }}" class="cliente-item">
+                            <div class="cliente-info">
+                                <strong class="label">Nome:</strong> <span class="value">{{ cliente.nome }}</span>
+                            </div>
+                            <div class="cliente-info">
+                                <strong class="label">Cidade:</strong> <span class="value">{{ cliente.cidade }}</span>
+                            </div>
+                            <div class="cliente-info">
+                                <strong class="label">Ticket:</strong> <em class="value">{{ cliente.ticket }}</em>
+                            </div>
+                        </li>
+                    {% endfor %}
                 {% else %}
-                <p class="no-clients">O sorteio ainda não foi realizado.</p>
+                    <p class="no-clients">O sorteio ainda não foi realizado.</p>
                 {% endif %}
             </ul>
         </div>
+        
     </div>
 
     <script>

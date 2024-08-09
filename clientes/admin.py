@@ -31,7 +31,8 @@ class CSVFileAdmin(admin.ModelAdmin):
                 nome=row['nome'],
                 numero=row['numero'],
                 cpf=row['cpf'],
-                ticket=row['ticket']
+                ticket=row['ticket'],
+                cidade=row['cidade']  
             )
 
 
@@ -39,7 +40,7 @@ class CSVFileAdmin(admin.ModelAdmin):
 class ConfiguracaoAdmin(admin.ModelAdmin):
     list_display = ('botao_ativo', 'quantidade_exibida')
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'numero', 'cpf', 'ticket', 'sorteado')    
+    list_display = ('nome', 'numero', 'cpf', 'ticket', 'cidade', 'sorteado')    
     
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Configuracao, ConfiguracaoAdmin)

@@ -6,6 +6,7 @@ class Cliente(models.Model):
     numero = models.CharField(max_length=20)
     cpf = models.CharField(max_length=14)
     ticket = models.IntegerField()
+    cidade = models.CharField(max_length=255, blank=True, null=True)
     sorteado = models.BooleanField(default=False)
 
     def __str__(self):

@@ -218,7 +218,10 @@
                 {% if ganhadores %}
                     <ul>
                         {% for ganhador in ganhadores %}
-                            <li><strong>{{ ganhador.nome }}</strong> - Ticket: <strong>{{ ganhador.ticket }}</strong></li>
+                            <li>
+                                <strong>{{ ganhador.nome }}</strong> - Ticket: <strong>{{ ganhador.ticket }}</strong>
+                                <span style="float: right; font-weight: bold;">{{ ganhador.cidade }}</span>
+                            </li>
                         {% endfor %}
                     </ul>
                 {% else %}
@@ -226,7 +229,6 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
     <!-- Menu de opções -->
     <div class="menu">
