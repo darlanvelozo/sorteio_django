@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Consulta de Tickets e Ganhadores</title>
     <style>
@@ -8,41 +9,40 @@
             background: url('{% if config.imagem_fundo %}{{ config.imagem_fundo.url }}{% else %}background.jpg{% endif %}') no-repeat center center fixed;
             background-size: cover;
             color: #333;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             min-height: 100vh;
-            margin: 0;
-            position: relative;
             background-color: #0056b3;
         }
 
         .container {
-            display: flex;
-            justify-content: space-between;
-            width: 80%;
+            width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
-            background-color: #ffffff;
             padding: 20px;
+            background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .left-panel, .right-panel {
-            width: 48%;
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             color: #007bff;
-            margin-bottom: 20px;
-            text-align: center;
+            margin: 0;
         }
 
         form {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         label {
@@ -51,21 +51,23 @@
         }
 
         input[type="text"] {
-            padding: 8px;
-            margin-bottom: 16px;
+            padding: 10px;
             border-radius: 4px;
             border: 1px solid #ddd;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 10px;
+            padding: 10px 20px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -98,7 +100,8 @@
             margin-top: 16px;
         }
 
-        .ganhadores-table th, .ganhadores-table td {
+        .ganhadores-table th,
+        .ganhadores-table td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
@@ -117,6 +120,22 @@
             color: #ff0000;
             text-align: center;
             margin-top: 20px;
+        }
+
+        .termos {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .termos a {
+            color: #000000;
+            text-decoration: underline;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .termos a:hover {
+            color: #333333;
         }
 
         /* Menu de opções */
@@ -169,31 +188,59 @@
             display: block;
         }
 
-        /* Título */
-        .titulo {
-            color: #f0f0f0;
+        /* Media Queries para responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            input[type="text"] {
+                max-width: 100%;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .ganhadores-table th,
+            .ganhadores-table td {
+                font-size: 14px;
+                padding: 8px;
+            }
         }
 
-        /* Estilos para o link de Termos & Condições */
-        .termos {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            width: 100%;
-        }
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
 
-        .termos a {
-            color: #000000;
-            text-decoration: underline;
-            font-weight: bold;
-            font-size: 18px;
-        }
+            .container {
+                padding: 10px;
+            }
 
-        .termos a:hover {
-            text-decoration: underline;
-            color: #333333;
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            input[type="text"],
+            button {
+                font-size: 14px;
+            }
+
+            .ganhadores-table th,
+            .ganhadores-table td {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .termos a {
+                font-size: 16px;
+            }
         }
     </style>
     <script>
@@ -202,47 +249,67 @@
         }
     </script>
 </head>
-<body>
-    <h1 class="titulo">Mega Sorteio</h1>
-    <div class="container">
-        <div class="left-panel">
-            <h1>Consulta de Tickets</h1>
-            <form method="get" action="{% url 'clientes:home' %}">
-                <label for="cpf">Digite o CPF:</label>
-                <input type="text" id="cpf" name="cpf" value="{{ cpf_query }}">
-                <button type="submit">Consultar</button>
-            </form>
 
-            <div class="results-container">
-                {% if clientes %}
-                    <h2>Tickets encontrados para o CPF {{ cpf_query }}:</h2>
-                    <ul>
-                        {% for cliente in clientes %}
-                            <li><span class="ticket">Ticket:</span> {{ cliente.ticket }}</li>
-                        {% endfor %}
-                    </ul>
-                {% elif cpf_query %}
-                    <p class="no-result">Nenhum ticket encontrado para o CPF {{ cpf_query }}.</p>
-                {% endif %}
-            </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mega Sorteio</h1>
         </div>
 
-        <div class="right-panel">
+        <form method="get" action="{% url 'clientes:home' %}">
+            <label for="cpf">Digite o CPF:</label>
+            <input type="text" id="cpf" name="cpf" value="{{ cpf_query }}">
+            <button type="submit">Consultar</button>
+        </form>
+
+        <div class="results-container">
+            {% if clientes %}
+            <h2>Tickets encontrados para o CPF {{ cpf_query }}:</h2>
+            <ul>
+                {% for cliente in clientes %}
+                <li><span class="ticket">Ticket:</span> {{ cliente.ticket }}</li>
+                {% endfor %}
+            </ul>
+            {% elif cpf_query %}
+            <p class="no-result">Nenhum ticket encontrado para o CPF {{ cpf_query }}.</p>
+            {% endif %}
+        </div>
+
+        <div class="results-container">
             <h2>Ganhadores do Sorteio</h2>
-            <div class="results-container">
-                {% if ganhadores %}
-                    <ul>
-                        {% for ganhador in ganhadores %}
-                            <li>
-                                <strong>{{ ganhador.nome }}</strong> - Ticket: <strong>{{ ganhador.ticket }}</strong>
-                                <span style="float: right; font-weight: bold;">{{ ganhador.cidade }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="no-result">O sorteio ainda não foi realizado.</p>
-                {% endif %}
-            </div>
+            {% if ganhadores %}
+            <table class="ganhadores-table">
+                <thead>
+                    <tr>
+                        <th>Colocação</th>
+                        <th>Nome</th>
+                        <th>Ticket</th>
+                        <th>Cidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ganhador in ganhadores %}
+                    <tr>
+                        <td>{{ forloop.counter }}º</td>
+                        <td><strong>{{ ganhador.nome }}</strong></td>
+                        <td><strong>{{ ganhador.ticket }}</strong></td>
+                        <td>{{ ganhador.cidade }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="no-result">O sorteio ainda não foi realizado.</p>
+            {% endif %}
+        </div>
+
+        <!-- Link para download dos Termos e Condições -->
+        <div class="termos">
+            {% if config.termos_arquivo %}
+            <a href="{{ config.termos_arquivo.url }}" download>Termos & Condições</a>
+            {% else %}
+            <p>Termos & Condições não disponíveis.</p>
+            {% endif %}
         </div>
     </div>
 
@@ -254,14 +321,6 @@
             <a href="{% url 'clientes:lista_clientes' %}">Sortear Clientes</a>
         </div>
     </div>
-
-    <!-- Link para download dos Termos e Condições -->
-    <div class="termos">
-        {% if config.termos_arquivo %}
-            <a href="{{ config.termos_arquivo.url }}" download>Termos & Condições</a>
-        {% else %}
-            <p>Termos & Condições não disponíveis.</p>
-        {% endif %}
-    </div>
 </body>
+
 </html>
