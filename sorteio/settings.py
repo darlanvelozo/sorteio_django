@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!-m-ux%9=q)tgz2r6u+g0twb0@jhqy_njr$4)10-&__ruza(%u
 DEBUG = True
 
 ALLOWED_HOSTS = [
-   
+   'megasorteio.megalinkpiaui.com.br','177.10.118.76', '127.0.0.1'
 ]
 
 
