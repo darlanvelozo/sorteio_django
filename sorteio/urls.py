@@ -23,8 +23,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
-    path('clientes/', include('clientes.urls')),  # Adicione esta linha para incluir URLs do aplicativo 'clientes'
+    path('clientes/', include('clientes.urls')), 
+    path('participacao/', include('participacao.urls')),  # Incluindo as URLs do aplicativo 'participacao'
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
